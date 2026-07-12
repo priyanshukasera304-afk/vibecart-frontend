@@ -89,26 +89,58 @@ function MyOrders() {
                   </span>
                 </div>
 
-                {/* Products List */}
+                {/* Products List with Sleek Image Support */}
                 <div className="divide-y divide-[#FAF9F5] mb-6">
                   {order.items?.map((item, index) => {
                     const productName = item.productId?.name || item.productId?.title || item.name || 'Premium Item';
                     const price = Number(item.price) || Number(item.productId?.price) || Number(item.priceAtPurchase) || 0;
                     const quantity = Number(item.quantity) || 1;
+                    
+                    // Dynamic Image fallback logic (Checks both image and imageUrl variants from backend)
+                    const productImage = item.productId?.image || item.productId?.imageUrl || item.image || item.imageUrl;
 
                     return (
-                      <div key={index} className="py-4 flex justify-between items-center first:pt-0 last:pb-0">
-                        <div className="flex items-baseline gap-2">
-                          <span className="text-sm font-bold text-[#1C1B17] tracking-wide">
-                            {productName}
-                          </span>
-                          <span className="text-xs font-bold font-sans text-[#706E64] bg-[#F5F3EB] px-2 py-0.5 rounded">
-                            x{quantity}
-                          </span>
+                      <div key={index} className="py-4 flex items-center justify-between gap-4 first:pt-0 last:pb-0">
+                        
+                        {/* Left: Image Box + Text Details */}
+                        <div className="flex items-center gap-4 min-w-0">
+                          {/* 🖼️ Premium Sleek Image Container */}
+                          <div className="w-16 h-16 bg-[#FAF9F5] border border-[#EFECE3] rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center p-1">
+                            {productImage ? (
+                              <img 
+                                src={productImage} 
+                                alt={productName}
+                                className="w-full h-full object-contain mix-blend-multiply"
+                              />
+                            ) : (
+                              // Fallback placeholder if no image exists
+                              <div className="text-[9px] uppercase font-bold text-[#A19E95] text-center px-1">
+                                Vibe
+                              </div>
+                            )}
+                          </div>
+
+                          {/* 📝 Product Info Details */}
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-sm font-bold text-[#1C1B17] tracking-wide truncate">
+                                {productName}
+                              </span>
+                              <span className="text-[10px] font-bold font-sans text-[#706E64] bg-[#F5F3EB] px-2 py-0.5 rounded whitespace-nowrap">
+                                x{quantity}
+                              </span>
+                            </div>
+                            <p className="text-[10px] text-[#706E64] mt-0.5 tracking-wider uppercase font-medium">
+                              Curated Essential
+                            </p>
+                          </div>
                         </div>
-                        <span className="text-sm font-extrabold text-[#1C1B17] font-sans">
+
+                        {/* Right: Total Price for this item */}
+                        <span className="text-sm font-extrabold text-[#1C1B17] font-sans flex-shrink-0">
                           ₹{price * quantity}
                         </span>
+
                       </div>
                     );
                   })}

@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+@theme {
+  /* Premium Muted Golden-Ivory Palette */
+  --color-brand-bg: #FAF8F2;       /* Soft luxury ivory-golden background */
+  --color-brand-card: #FFFFFF;     /* Pure clean card white */
+  --color-brand-text-main: #23221E;/* Deep earthy dark brown-slate (instead of harsh black) */
+  --color-brand-text-muted: #706E64; /* Soft warm gray for captions */
+  --color-brand-gold: #D4AF37;     /* Pure gold accent (subtle use for lines/stars) */
+  --color-brand-primary: #1C1B17;  /* Deep charcoal-gold contrast for luxury buttons */
+}
+
+body {
+  background-color: var(--color-brand-bg);
+  color: var(--color-brand-text-main);
+  font-family: system-ui, -apple-system, sans-serif;
+}

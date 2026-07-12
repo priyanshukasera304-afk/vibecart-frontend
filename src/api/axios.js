@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 const API = axios.create({
-    baseURL: ' https://vibecart-backend-yame.onrender.com', // Tumhara backend jis port par chalta hai
+   //  Isko aaisa bilkul sahi kar do:
+baseURL: 'https://vibecart-backend-yame.onrender.com/api', // Tumhara backend jis port par chalta hai
 });
 
 // 🔥 Industry Practice: Har request ke saath automatic browser se token utha kar backend ko bhejna

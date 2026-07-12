@@ -89,38 +89,54 @@ function MyOrders() {
                   </span>
                 </div>
 
-                {/* Products List with Sleek Image Support */}
+                {/* Products List with Strict URL Verification */}
                 <div className="divide-y divide-[#FAF9F5] mb-6">
                   {order.items?.map((item, index) => {
                     const productName = item.productId?.name || item.productId?.title || item.name || 'Premium Item';
                     const price = Number(item.price) || Number(item.productId?.price) || Number(item.priceAtPurchase) || 0;
                     const quantity = Number(item.quantity) || 1;
                     
-                    // Dynamic Image fallback logic (Checks both image and imageUrl variants from backend)
-                    const productImage = item.productId?.image || item.productId?.imageUrl || item.image || item.imageUrl;
+                    // 🔍 Comprehensive extraction logic for potential database keys
+                    const rawImg = item.productId?.image || 
+                                   item.productId?.imageUrl || 
+                                   item.productId?.img || 
+                                   item.productId?.productImage ||
+                                   item.image || 
+                                   item.imageUrl;
+
+                    // 🛡️ Checks if image link is valid and starts with HTTP/HTTPS to prevent 404 triggers
+                    const hasValidImage = rawImg && typeof rawImg === 'string' && (rawImg.startsWith('http://') || rawImg.startsWith('https://'));
 
                     return (
                       <div key={index} className="py-4 flex items-center justify-between gap-4 first:pt-0 last:pb-0">
                         
-                        {/* Left: Image Box + Text Details */}
+                        {/* Left Content Block */}
                         <div className="flex items-center gap-4 min-w-0">
-                          {/* 🖼️ Premium Sleek Image Container */}
+                          {/* 🖼️ Premium Border-Box Image Wrapper */}
                           <div className="w-16 h-16 bg-[#FAF9F5] border border-[#EFECE3] rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center p-1">
-                            {productImage ? (
+                            {hasValidImage ? (
                               <img 
-                                src={productImage} 
+                                src={rawImg} 
                                 alt={productName}
                                 className="w-full h-full object-contain mix-blend-multiply"
+                                onError={(e) => {
+                                  // Fallback layout setup in case deployment links act broken live
+                                  e.target.style.display = 'none';
+                                  e.target.nextSibling.style.display = 'flex';
+                                }}
                               />
-                            ) : (
-                              // Fallback placeholder if no image exists
-                              <div className="text-[9px] uppercase font-bold text-[#A19E95] text-center px-1">
-                                Vibe
-                              </div>
-                            )}
+                            ) : null}
+
+                            {/* 📦 CSS fallback banner when image path is structurally invalid */}
+                            <div 
+                              className="text-[10px] uppercase font-bold text-[#A19E95] tracking-widest text-center px-1"
+                              style={{ display: hasValidImage ? 'none' : 'flex' }}
+                            >
+                              VIBE
+                            </div>
                           </div>
 
-                          {/* 📝 Product Info Details */}
+                          {/* 📝 Name Tags */}
                           <div className="min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
                               <span className="text-sm font-bold text-[#1C1B17] tracking-wide truncate">
@@ -136,7 +152,7 @@ function MyOrders() {
                           </div>
                         </div>
 
-                        {/* Right: Total Price for this item */}
+                        {/* Right Content Block */}
                         <span className="text-sm font-extrabold text-[#1C1B17] font-sans flex-shrink-0">
                           ₹{price * quantity}
                         </span>

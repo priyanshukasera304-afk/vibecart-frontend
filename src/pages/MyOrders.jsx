@@ -9,7 +9,7 @@ function MyOrders() {
     const fetchOrders = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get('http://localhost:3000/api/orders/my-orders', {
+        const res = await axios.get('https://vibecart-backend-yame.onrender.com/api/orders/my-orders', {
           headers: { Authorization: `Bearer ${token}` }
         });
         setOrders(res.data);

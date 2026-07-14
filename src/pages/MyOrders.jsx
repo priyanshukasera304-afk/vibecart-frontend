@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'ajax'; // Note: Tumne upar axios use kiya hai, make sure wrapper correct ho
+import axios from 'axios'; // 👈 Make sure 'axios' hi import ho
 
 function MyOrders() {
   const [orders, setOrders] = useState([]);
@@ -13,8 +13,8 @@ function MyOrders() {
           headers: { Authorization: `Bearer ${token}` }
         });
         
-        // 🔍 DEBUGGING LOG: Isko console me check karna bhai ki productId string hai ya object!
-        console.log("Bhai backend se orders ka data ye aaya hai:", res.data);
+        // 🔍 Is log ko browser console me check karna bhai expand karke
+        console.log("Backend Se Aaya Data:", res.data);
         
         setOrders(res.data);
       } catch (error) {
@@ -28,16 +28,11 @@ function MyOrders() {
 
   const getStatusStyles = (status) => {
     switch (status?.toUpperCase()) {
-      case 'DELIVERED':
-        return 'bg-[#EBF7EE] text-[#1E6636] border-[#D1F0DA]';
-      case 'SHIPPED':
-        return 'bg-[#E8F1FF] text-[#1A4FA3] border-[#D1E3FF]';
-      case 'PENDING':
-        return 'bg-[#FFF7E6] text-[#A36A00] border-[#FFE6B3]';
-      case 'CANCELLED':
-        return 'bg-[#FDF2F2] text-[#A82222] border-[#FBD5D5]';
-      default:
-        return 'bg-[#F4F4F5] text-[#4F4F52] border-[#E4E4E7]';
+      case 'DELIVERED': return 'bg-[#EBF7EE] text-[#1E6636] border-[#D1F0DA]';
+      case 'SHIPPED': return 'bg-[#E8F1FF] text-[#1A4FA3] border-[#D1E3FF]';
+      case 'PENDING': return 'bg-[#FFF7E6] text-[#A36A00] border-[#FFE6B3]';
+      case 'CANCELLED': return 'bg-[#FDF2F2] text-[#A82222] border-[#FBD5D5]';
+      default: return 'bg-[#F4F4F5] text-[#4F4F52] border-[#E4E4E7]';
     }
   };
 
@@ -74,10 +69,8 @@ function MyOrders() {
         ) : (
           <div className="space-y-8">
             {orders.map((order) => (
-              <div 
-                key={order._id} 
-                className="bg-white border border-[#EFECE3] rounded-2xl p-6 sm:p-8 shadow-sm hover:shadow-md transition-all duration-300"
-              >
+              <div key={order._id} className="bg-white border border-[#EFECE3] rounded-2xl p-6 sm:p-8 shadow-sm hover:shadow-md transition-all duration-300">
+                
                 {/* Order Meta Data */}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-[#FAF9F5] pb-4 mb-6">
                   <div>
@@ -100,22 +93,20 @@ function MyOrders() {
                     const price = Number(item.price) || Number(item.productId?.price) || 0;
                     const quantity = Number(item.quantity) || 1;
                     
-                    // 🔍 SAFE EXTRACTION: Har jagah se image check karega
+                    // 🔍 Try parsing image from nested populate first, then direct item property
                     const rawImg = item.productId?.image || 
                                    item.productId?.imageUrl || 
                                    item.productId?.img || 
                                    item.image || 
                                    item.imageUrl;
 
-                    // 🛡️ Tabhi true hoga jab properly absolute Web URL link milegi
                     const hasValidImage = rawImg && typeof rawImg === 'string' && (rawImg.startsWith('http://') || rawImg.startsWith('https://'));
 
                     return (
                       <div key={index} className="py-4 flex items-center justify-between gap-4 first:pt-0 last:pb-0">
-                        
-                        {/* Left Content Block */}
                         <div className="flex items-center gap-4 min-w-0">
-                          {/* 🖼️ Premium Border-Box Image Wrapper */}
+                          
+                          {/* 🖼️ Image Wrapper */}
                           <div className="w-16 h-16 bg-[#FAF9F5] border border-[#EFECE3] rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center p-1 relative">
                             {hasValidImage ? (
                               <img 
@@ -123,15 +114,12 @@ function MyOrders() {
                                 alt={productName}
                                 className="w-full h-full object-contain mix-blend-multiply"
                                 onError={(e) => {
-                                  // Agar Cloudinary ka link render block kare toh fallback par shift kare
                                   e.target.style.display = 'none';
-                                  const fallbackDiv = e.target.nextSibling;
-                                  if (fallbackDiv) fallbackDiv.style.display = 'flex';
+                                  if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
                                 }}
                               />
                             ) : null}
 
-                            {/* 📦 CSS fallback container */}
                             <div 
                               className="text-[10px] uppercase font-bold text-[#A19E95] tracking-widest text-center px-1 absolute inset-0 bg-[#FAF9F5] flex items-center justify-center"
                               style={{ display: hasValidImage ? 'none' : 'flex' }}
@@ -140,7 +128,7 @@ function MyOrders() {
                             </div>
                           </div>
 
-                          {/* 📝 Product Meta Info */}
+                          {/* 📝 Product Info */}
                           <div className="min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
                               <span className="text-sm font-bold text-[#1C1B17] tracking-wide truncate">
@@ -156,11 +144,9 @@ function MyOrders() {
                           </div>
                         </div>
 
-                        {/* Right Content Block */}
                         <span className="text-sm font-extrabold text-[#1C1B17] font-sans flex-shrink-0">
                           ₹{price * quantity}
                         </span>
-
                       </div>
                     );
                   })}
@@ -172,12 +158,8 @@ function MyOrders() {
                     Payment Method: <span className="font-bold text-[#1C1B17]">{order.paymentMethod || 'COD'}</span>
                   </div>
                   <div className="flex items-baseline gap-2 sm:self-end">
-                    <span className="text-xs uppercase tracking-widest font-bold text-[#706E64]">
-                      Total Paid:
-                    </span>
-                    <span className="text-xl font-black text-[#1C1B17] font-sans tracking-tight">
-                      ₹{order.totalAmount}
-                    </span>
+                    <span className="text-xs uppercase tracking-widest font-bold text-[#706E64]">Total Paid:</span>
+                    <span className="text-xl font-black text-[#1C1B17] font-sans tracking-tight">₹{order.totalAmount}</span>
                   </div>
                 </div>
 

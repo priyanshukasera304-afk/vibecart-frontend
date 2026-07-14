@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios from 'ajax'; // Note: Tumne upar axios use kiya hai, make sure wrapper correct ho
 
 function MyOrders() {
   const [orders, setOrders] = useState([]);
@@ -12,6 +12,10 @@ function MyOrders() {
         const res = await axios.get('https://vibecart-backend-yame.onrender.com/api/orders/my-orders', {
           headers: { Authorization: `Bearer ${token}` }
         });
+        
+        // 🔍 DEBUGGING LOG: Isko console me check karna bhai ki productId string hai ya object!
+        console.log("Bhai backend se orders ka data ye aaya hai:", res.data);
+        
         setOrders(res.data);
       } catch (error) {
         console.error("Error fetching orders:", error);
@@ -89,22 +93,21 @@ function MyOrders() {
                   </span>
                 </div>
 
-                {/* Products List with Strict URL Verification */}
+                {/* Products List */}
                 <div className="divide-y divide-[#FAF9F5] mb-6">
                   {order.items?.map((item, index) => {
                     const productName = item.productId?.name || item.productId?.title || item.name || 'Premium Item';
-                    const price = Number(item.price) || Number(item.productId?.price) || Number(item.priceAtPurchase) || 0;
+                    const price = Number(item.price) || Number(item.productId?.price) || 0;
                     const quantity = Number(item.quantity) || 1;
                     
-                    // 🔍 Comprehensive extraction logic for potential database keys
+                    // 🔍 SAFE EXTRACTION: Har jagah se image check karega
                     const rawImg = item.productId?.image || 
                                    item.productId?.imageUrl || 
                                    item.productId?.img || 
-                                   item.productId?.productImage ||
                                    item.image || 
                                    item.imageUrl;
 
-                    // 🛡️ Checks if image link is valid and starts with HTTP/HTTPS to prevent 404 triggers
+                    // 🛡️ Tabhi true hoga jab properly absolute Web URL link milegi
                     const hasValidImage = rawImg && typeof rawImg === 'string' && (rawImg.startsWith('http://') || rawImg.startsWith('https://'));
 
                     return (
@@ -113,30 +116,31 @@ function MyOrders() {
                         {/* Left Content Block */}
                         <div className="flex items-center gap-4 min-w-0">
                           {/* 🖼️ Premium Border-Box Image Wrapper */}
-                          <div className="w-16 h-16 bg-[#FAF9F5] border border-[#EFECE3] rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center p-1">
+                          <div className="w-16 h-16 bg-[#FAF9F5] border border-[#EFECE3] rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center p-1 relative">
                             {hasValidImage ? (
                               <img 
                                 src={rawImg} 
                                 alt={productName}
                                 className="w-full h-full object-contain mix-blend-multiply"
                                 onError={(e) => {
-                                  // Fallback layout setup in case deployment links act broken live
+                                  // Agar Cloudinary ka link render block kare toh fallback par shift kare
                                   e.target.style.display = 'none';
-                                  e.target.nextSibling.style.display = 'flex';
+                                  const fallbackDiv = e.target.nextSibling;
+                                  if (fallbackDiv) fallbackDiv.style.display = 'flex';
                                 }}
                               />
                             ) : null}
 
-                            {/* 📦 CSS fallback banner when image path is structurally invalid */}
+                            {/* 📦 CSS fallback container */}
                             <div 
-                              className="text-[10px] uppercase font-bold text-[#A19E95] tracking-widest text-center px-1"
+                              className="text-[10px] uppercase font-bold text-[#A19E95] tracking-widest text-center px-1 absolute inset-0 bg-[#FAF9F5] flex items-center justify-center"
                               style={{ display: hasValidImage ? 'none' : 'flex' }}
                             >
                               VIBE
                             </div>
                           </div>
 
-                          {/* 📝 Name Tags */}
+                          {/* 📝 Product Meta Info */}
                           <div className="min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
                               <span className="text-sm font-bold text-[#1C1B17] tracking-wide truncate">

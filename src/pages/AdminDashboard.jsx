@@ -20,25 +20,37 @@ function AdminDashboard() {
   const [uploadingProduct, setUploadingProduct] = useState(false);
 
   // 🔄 Fetch All Dashboard Data (Orders, Analytics & Products)
-  const fetchDashboardData = async () => {
+const fetchDashboardData = async () => {
     try {
       const token = localStorage.getItem('token');
       
       // 1. Fetch Analytics Data
-      const analyticsRes = await API.get('/orders/admin/analytics', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setAnalytics(analyticsRes.data);
+      try {
+        const analyticsRes = await API.get('/orders/admin/analytics', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setAnalytics(analyticsRes.data);
+      } catch (err) {
+        console.error("Analytics load error:", err);
+      }
 
       // 2. Fetch All Orders Data
-      const ordersRes = await API.get('/orders/admin/all', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setOrders(ordersRes.data.orders || ordersRes.data);
+      try {
+        const ordersRes = await API.get('/orders/admin/all', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setOrders(ordersRes.data.orders || ordersRes.data);
+      } catch (err) {
+        console.error("Orders load error:", err);
+      }
 
-      // 3. Fetch All Products (Inventory management ke liye)
-      const productsRes = await API.get('/products'); // Apne product list endpoint check kar lena bhai
-      setProducts(productsRes.data.products || productsRes.data);
+      // 3. Fetch All Products
+      try {
+        const productsRes = await API.get('/products'); // 👈 Agar iska endpoint kuch aur hai to check kar lena bhai
+        setProducts(productsRes.data.products || productsRes.data);
+      } catch (err) {
+        console.error("Products inventory load error:", err);
+      }
 
     } catch (err) {
       console.error("Dashboard data load error:", err);
@@ -47,7 +59,6 @@ function AdminDashboard() {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     fetchDashboardData();
   }, []);

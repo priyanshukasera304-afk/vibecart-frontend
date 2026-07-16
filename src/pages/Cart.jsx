@@ -1,15 +1,56 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { useNavigate, Link } from 'react-router-dom';
+import axios from 'axios'; // 👈 API call karne ke liye Axios import kiya
 
 function Cart() {
   const { cartItems, removeFromCart } = useCart();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false); // 👈 Button loading state handle karne ke liye
 
   // Calculation logic
   const subtotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
   const shipping = subtotal > 5000 ? "FREE" : subtotal === 0 ? "₹0" : "₹150";
   const total = subtotal > 5000 ? subtotal : subtotal + (subtotal === 0 ? 0 : 150);
+
+  // 💳 PAYMENT CHECKOUT HANDLER (Stripe Integration)
+  const handleCheckout = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('token'); // Auth check karne ke liye token uthaya
+      
+      if (!token) {
+        alert("Bhai, payment karne se pehle login to kar lo! 😉");
+        navigate('/login');
+        return;
+      }
+
+      // Backend ko API call bheji (Hum cartItems bhej rahe hain taaki Stripe pricing read kar sake)
+      // Node.js localhost port 3000 par run ho raha hai to hum wahi URL use karenge
+      const response = await axios.post(
+        'http://localhost:3000/api/payment/create-checkout-session',
+        { cartItems: cartItems },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Header me authorization token attach kiya
+          },
+        }
+      );
+
+      // Agar backend se secure Checkout Session URL mil jata hai
+      if (response.data && response.data.url) {
+        window.location.href = response.data.url; // 🚀 User ko Stripe Checkout Page par bhej do!
+      } else {
+        alert("Locha ho gaya bhai! Checkout URL nahi mil paya.");
+      }
+
+    } catch (error) {
+      console.error("Payment checkout error:", error);
+      alert(error.response?.data?.message || "Payment proceed karne me locha ho gaya!");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (cartItems.length === 0) {
     return (
@@ -131,9 +172,13 @@ function Cart() {
               </div>
 
               {/* Action Button */}
+              {/* Button me loading condition aur disabled flag lagaya h taaki double tap pr payment crash na ho */}
               <button
-              onClick={()=> navigate('/checkout')} className="w-full bg-[#1C1B17] text-[#FAF8F2] py-4 rounded-xl text-xs tracking-widest font-bold uppercase hover:bg-[#2E2C26] transition-all duration-300 shadow-sm active:scale-[0.99]">
-                Proceed to Checkout
+                onClick={handleCheckout} 
+                disabled={loading}
+                className="w-full bg-[#1C1B17] text-[#FAF8F2] py-4 rounded-xl text-xs tracking-widest font-bold uppercase hover:bg-[#2E2C26] transition-all duration-300 shadow-sm active:scale-[0.99] disabled:opacity-50"
+              >
+                {loading ? "PROCEEDING TO PAYMENT..." : "PROCEED TO CHECKOUT"}
               </button>
               
               {/* Back to browsing hook */}

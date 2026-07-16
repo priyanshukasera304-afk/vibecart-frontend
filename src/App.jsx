@@ -10,6 +10,7 @@ import Navbar from './components/Navbar';
 import { CartProvider } from './context/CartContext';
 import AdminDashboard from './pages/AdminDashboard'; 
 import MyOrders from './pages/MyOrders';
+import Success from './pages/Success';
 
 function App() {
   return (
@@ -62,6 +63,7 @@ function App() {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/admin/" element={<AdminDashboard />} />
           <Route path="/my-orders" element={<MyOrders />} />
+          <Route path="/success" element={<Success />} />
         </Routes>
       </Router>
     </CartProvider>

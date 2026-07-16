@@ -27,15 +27,15 @@ function Cart() {
 
       // Backend ko API call bheji (Hum cartItems bhej rahe hain taaki Stripe pricing read kar sake)
       // Node.js localhost port 3000 par run ho raha hai to hum wahi URL use karenge
-      const response = await axios.post(
-        'http://localhost:3000/api/payment/create-checkout-session',
-        { cartItems: cartItems },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // Header me authorization token attach kiya
-          },
-        }
-      );
+    const response = await axios.post(
+  'https://vibecart-backend-yaml...com/api/payment/create-checkout-session', // 🎯 Apne asli deploy kiye hue backend ka live URL yahan daalo!
+  { cartItems: cartItems },
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+);
 
       // Agar backend se secure Checkout Session URL mil jata hai
       if (response.data && response.data.url) {

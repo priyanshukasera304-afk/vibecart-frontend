@@ -29,13 +29,15 @@ const Success = () => {
       try {
         const token = localStorage.getItem('token');
         
-        const response = await axios.post(
-          'http://localhost:3000/api/payment/verify-payment',
-          { sessionId },
-          {
-            headers: { Authorization: `Bearer ${token}` }
-          }
-        );
+      const response = await axios.post(
+  'https://vibecart-backend-yame.onrender.com/api/payment/verify-payment', // 🎯 Exact Live Backend URL!
+  { sessionId },
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+);
 
         if (response.data.success) {
           // 🧼 A. Local storage saaf kiya

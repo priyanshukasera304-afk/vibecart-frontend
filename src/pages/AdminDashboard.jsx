@@ -20,7 +20,7 @@ function AdminDashboard() {
   const [uploadingProduct, setUploadingProduct] = useState(false);
 
   // 🔄 Fetch All Dashboard Data (Orders, Analytics & Products)
-const fetchDashboardData = async () => {
+  const fetchDashboardData = async () => {
     try {
       const token = localStorage.getItem('token');
       
@@ -44,9 +44,9 @@ const fetchDashboardData = async () => {
         console.error("Orders load error:", err);
       }
 
-      // 3. Fetch All Products
+      // 3. Fetch All Products (🎯 Fixed: Map with your backend router -> /all)
       try {
-        const productsRes = await API.get('/products'); // 👈 Agar iska endpoint kuch aur hai to check kar lena bhai
+        const productsRes = await API.get('/products/all'); 
         setProducts(productsRes.data.products || productsRes.data);
       } catch (err) {
         console.error("Products inventory load error:", err);
@@ -59,6 +59,7 @@ const fetchDashboardData = async () => {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     fetchDashboardData();
   }, []);
@@ -110,10 +111,12 @@ const fetchDashboardData = async () => {
       formData.append('stock', productStock);
       
       if (productImage) {
-        formData.append('image', productImage); // Config key 'image' ke matching
+        // 🎯 Fixed: Backend router key exactly maps to 'productImage'
+        formData.append('productImage', productImage); 
       }
 
-      await API.post('/products/add-product', formData, {
+      // 🎯 Fixed: Backend create endpoint changed to '/products/create'
+      await API.post('/products/create', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`
@@ -140,7 +143,7 @@ const fetchDashboardData = async () => {
     }
   };
 
-  // 🗑️ DELETE PRODUCT HANDLER
+  // 🗑️ DELETE PRODUCT HANDLER (🎯 Maps correctly to /products/delete/:id)
   const handleDeleteProduct = async (productId) => {
     if (window.confirm("Bhai, kya sach me ye product delete karna hai?")) {
       try {

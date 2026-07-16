@@ -27,8 +27,8 @@ function Cart() {
 
       // Backend ko API call bheji (Hum cartItems bhej rahe hain taaki Stripe pricing read kar sake)
       // Node.js localhost port 3000 par run ho raha hai to hum wahi URL use karenge
-    const response = await axios.post(
-  'https://https://vibecart-backend-yame.onrender.com/api/payment/create-checkout-session', // 🎯 Apne asli deploy kiye hue backend ka live URL yahan daalo!
+const response = await axios.post(
+  'https://vibecart-backend-yame.onrender.com/api/payment/create-checkout-session', // 🎯 Exact Live URL
   { cartItems: cartItems },
   {
     headers: {
